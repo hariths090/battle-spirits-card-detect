@@ -1,0 +1,1 @@
+# battle-spirits-card-detect
