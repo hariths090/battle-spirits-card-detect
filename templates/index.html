@@ -16,42 +16,53 @@
 
 <body>
     <div class="container text-center">
-        <div class="grid">
+        <div class="row">
             {% for i in card %}
-            <img src="{{i[0].img}}" class="g-col-md-2 g-col-xs-12 p-2" style="float: left !important;"
+            {% set loop_index = loop.index %}
+            <div class="col-md-2 col-xs-12 p-2" style="float: left !important;">
+                <img src="card/{{i.card[0].image}}" 
+                class="col-12 p-2"
+                id="card{{ loop.index }}"
                 data-bs-toggle="modal" data-bs-target="#topten{{ loop.index }}">
-
+                <a id="data{{ loop.index }}" href="{{ 'https://battle-spirits.fandom.com/wiki/' + i.card[0].name }}" class="btn btn-block p-2 m-2 bg-dark text-light" target="_blank">Card data</a>
+            </div>
+            
+            
             <div class="modal fade" id="topten{{ loop.index }}" tabindex="-1" aria-labelledby="topten{{ loop.index }}Label" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div id="list{{ loop.index }}" class="carousel slide">
                             <div class="carousel-inner">
-                                {% for j in i %}
+                                {% for j in i.card %}
                                 <div class="carousel-item {{ 'active' if loop.index == 1 else '' }}">
-                                    <div class="d-inline p-2 m-2 bg-white text-dark d-lg-block">{{ j.name }}</div>
-                                    <a href="{{ j.url }}" target="_blank">
-                                        <img class="rounded d-block p-2" src="{{ j.img }}" style="width:100%">
+                                    <div class="d-inline p-2 m-2 bg-white text-dark d-lg-block"
+                                    >{{ loop.index }} : {{ j.name }}</div>
+                                    <a href="{{ 'https://battle-spirits.fandom.com/wiki/' + j.name }}" 
+                                        class="text-center" target="_blank" 
+                                        onclick="document.getElementById('card{{loop_index}}').src = 'card/{{ j.image }}';document.getElementById('data{{loop_index}}').href = 'https\:\/\/battle-spirits.fandom.com\/wiki\/{{j.name}}';">
+                                        <img class="rounded p-2" src="card/{{ j.image }}" style="height: 60vh;">
                                     </a>
                                 </div>
                                 {% endfor %}
                             </div>
 
-                            <button class="carousel-control-prev btn" type="button" data-bs-target="#list{{ loop.index }}"
+                            <button class="carousel-control-prev" 
+                                type="button" 
+                                data-bs-target="#list{{ loop.index }}"
                                 data-bs-slide="prev">
-                                <!-- <span class="carousel-control-prev-icon"></span> -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="46" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="dark" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
                                     <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                                 </svg>
                             </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#list{{ loop.index }}"
+                            <button class="carousel-control-next" 
+                                type="button" 
+                                data-bs-target="#list{{ loop.index }}"
                                 data-bs-slide="next">
-                                <!-- <span class="carousel-control-next-icon"></span> -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="dark" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
                                     <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
                                 </svg>
                             </button>
                         </div>
-
                     </div>
                 </div>
             </div>
