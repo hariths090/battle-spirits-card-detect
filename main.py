@@ -1,10 +1,10 @@
-from fastapi import FastAPI, Request, File, File
+from fastapi import FastAPI, Request, File, File, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from ai import detect_card_filename, detect_card_filebyte
-import numpy as np
-import cv2
+import cv2, numpy as np
+
 app = FastAPI()
 
 app.mount("/images", StaticFiles(directory="images"), name="images")
@@ -18,9 +18,9 @@ async def root(request:Request):
                                                         "card": card})
 
 @app.post("/upload/")
-async def get_body(file: bytes = File(...), save: bool = False):
+async def get_body(request:Request, file: bytes = File(...), save: bool = Form(...)):
     if save == True:
         open("./images/source.jpg", "wb").write(file)
-        return {"result": detect_card_filename()}
+        return {"result": "upload sucess"}
     else:
         return {"result": detect_card_filebyte(file)}

@@ -1,8 +1,4 @@
-import cv2
-import torch
-import pickle
-import numpy as np
-import io
+import cv2, torch, io, pickle, numpy as np
 from PIL import Image
 
 (tW, tH) = 111, 161
@@ -20,7 +16,7 @@ def classificate_card(image):
         found.append([maxVal, name, img])
     
     found = sorted(found, key=lambda l:l[0], reverse=True)
-    return found[:10]
+    return found[:5]
 
 def detect_card_filename():
     model = torch.hub.load('yolo/', 'custom', path='yolo/best.pt', source='local', skip_validation=True)
@@ -36,8 +32,15 @@ def detect_card_filename():
         crop_card = img[int(r['ymin']):int(r['ymax']),
                         int(r['xmin']):int(r['xmax'])]
         
-        result[index]["card"] = [{"name":c[1], "image":c[2]} for c in classificate_card(crop_card)]
-
+        cv2.rectangle(img, (int(r['xmin']), int(r['ymin'])), (int(r['xmax']), int(r['ymax'])), color = (0, 0, 255), thickness=2)
+        if r['xmax'] - r['xmin'] < r['ymax'] - r['ymin']:
+            cv2.putText(img, str(index + 1), (int(r['xmin']), int(r['ymin']) - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), thickness=2)
+            result[index]["card"] = [{"name":c[1], "image":c[2]} for c in classificate_card(crop_card)]
+        else:
+            result[index]["card"] = [{"name": "no card", "image": "blank.jpg"}]
+            
+    cv2.imwrite("./images/source.jpg", img)
+    # print(result)
     return result
 
 def detect_card_filebyte(file):
@@ -56,5 +59,5 @@ def detect_card_filebyte(file):
                         int(r['xmin']):int(r['xmax'])]
         
         result[index]["card"] = [{"name":c[1], "image":c[2]} for c in classificate_card(crop_card)]
-
+        
     return result
