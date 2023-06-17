@@ -16,11 +16,11 @@ def classificate_card(image):
         found.append([maxVal, name, img])
     
     found = sorted(found, key=lambda l:l[0], reverse=True)
-    return found[:5]
+    return found[:10]
 
-def detect_card_filename():
+def detect_card_filename(file_name = "source.jpg"):
     model = torch.hub.load('yolo/', 'custom', path='yolo/best.pt', source='local', skip_validation=True)
-    im = 'images/source.jpg'
+    im = f'images/{file_name}'
     results = model(im, size=640)
     
     img = cv2.imread(im)
@@ -39,7 +39,7 @@ def detect_card_filename():
         else:
             result[index]["card"] = [{"name": "no card", "image": "blank.jpg"}]
             
-    cv2.imwrite("./images/source.jpg", img)
+    cv2.imwrite(f"./images/{file_name}", img)
     # print(result)
     return result
 

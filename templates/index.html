@@ -35,15 +35,22 @@
                     <input type="file" accept="image/*" capture="camera" class="form-control" id="cameraInput">
                 </div>
             </div>
+            {% if image %}
             <div class="row mt-3">
                 <div class="col-md-12">
-                    <img id="preview" src="/images/source.jpg" alt="Preview" class="img-fluid rounded">
+                    <img id="preview" src="/images/{{image}}" alt="Preview" class="img-fluid rounded">
                 </div>
             </div>
+            {% endif %}
 
             <script>
                 const cameraInput = document.getElementById('cameraInput');
                 const preview = document.getElementById('preview');
+
+                window.addEventListener('paste', e => {
+                    cameraInput.files = e.clipboardData.files;
+                    cameraInput.dispatchEvent(new Event('change'));
+                  });
 
                 cameraInput.addEventListener('change', function (event) {
                     const file = event.target.files[0];
@@ -55,9 +62,25 @@
 
                     reader.readAsDataURL(file);
 
+                    const timestamp = Date.now();
+
+                    const date = new Date(timestamp);
+
+                    const year = date.getFullYear();
+                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                    const day = date.getDate().toString().padStart(2, '0');
+
+                    const hours = date.getHours().toString().padStart(2, '0');
+                    const minutes = date.getMinutes().toString().padStart(2, '0');
+                    const seconds = date.getSeconds().toString().padStart(2, '0');
+
+                    const fileName = `${year}${month}${day}_${hours}${minutes}${seconds}.jpg`;
+
+
                     const formData = new FormData();
                     formData.append('file', file);
                     formData.append('save', true);
+                    formData.append('file_name', fileName);
                     for (const entry of formData.entries()) {
                         console.log(entry[0], entry[1]);
                     }
@@ -68,7 +91,7 @@
                         .then(response => response.json())
                         .then(data => {
                             console.log('Upload success:', data);
-                            location.reload();
+                            window.location.href = window.location.protocol + '//' + window.location.host + "?img=" + fileName;
                         })
                         .catch(error => {
                             console.error('Upload error:', error);

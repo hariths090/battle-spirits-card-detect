@@ -13,14 +13,16 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/")
 async def root(request:Request):
-    card = detect_card_filename()
+    img = request.query_params.get('img')
+    card = detect_card_filename(img) if img else []
     return templates.TemplateResponse("index.html", {"request": request, 
-                                                        "card": card})
+                                                        "card": card,
+                                                        "image": img})
 
 @app.post("/upload/")
-async def get_body(request:Request, file: bytes = File(...), save: bool = Form(...)):
+async def get_body(request:Request, file: bytes = File(...), save: bool = Form(...), file_name: str = Form(...)):
     if save == True:
-        open("./images/source.jpg", "wb").write(file)
+        open(f"./images/{file_name}", "wb").write(file)
         return {"result": "upload sucess"}
     else:
         return {"result": detect_card_filebyte(file)}
